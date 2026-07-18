@@ -429,8 +429,24 @@ def main() -> None:
     app.add_handler(CommandHandler("myid", cmd_myid))
     app.add_handler(CallbackQueryHandler(on_callback))
 
-    logger.info("Bot iniciado (polling). Ctrl+C para detener.")
-    app.run_polling(allowed_updates=Update.ALL_TYPES)
+    if config.WEBHOOK_URL:
+        # Modo webhook: necesario en un Web Service de Render (abre $PORT).
+        # Telegram empuja los updates a WEBHOOK_URL/<token>.
+        url_path = config.TELEGRAM_BOT_TOKEN  # ruta secreta
+        logger.info(
+            "Bot iniciado (webhook) en puerto %s → %s", config.PORT, config.WEBHOOK_URL
+        )
+        app.run_webhook(
+            listen="0.0.0.0",
+            port=config.PORT,
+            url_path=url_path,
+            webhook_url=f"{config.WEBHOOK_URL}/{url_path}",
+            allowed_updates=Update.ALL_TYPES,
+            drop_pending_updates=True,
+        )
+    else:
+        logger.info("Bot iniciado (polling). Ctrl+C para detener.")
+        app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
 if __name__ == "__main__":

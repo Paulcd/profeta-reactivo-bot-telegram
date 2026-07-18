@@ -31,6 +31,15 @@ TELEGRAM_BOT_TOKEN: str = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 API_URL: str = os.getenv("API_URL", "http://localhost:8000").rstrip("/")
 API_TIMEOUT: float = float(os.getenv("API_TIMEOUT", "15"))
 
+# --- Modo de ejecución ---
+# WEBHOOK_URL vacío  => polling (ideal para local / Background Worker).
+# WEBHOOK_URL puesto => webhook (necesario en un Web Service de Render, que exige
+#                        abrir un puerto). Debe ser la URL pública del servicio,
+#                        ej: https://profeta-reactivo-bot-telegram.onrender.com
+WEBHOOK_URL: str = os.getenv("WEBHOOK_URL", "").strip().rstrip("/")
+# Render inyecta PORT automáticamente; en local cae a 8080.
+PORT: int = int(os.getenv("PORT", "8080"))
+
 # --- Control de acceso: whitelist de chat_id autorizados ---
 # Vacío = cualquiera puede usar el bot (útil solo en desarrollo).
 ALLOWED_CHAT_IDS: set[int] = _parse_chat_ids(os.getenv("ALLOWED_CHAT_IDS"))
